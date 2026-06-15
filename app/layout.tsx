@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Poppins } from 'next/font/google'
 import { LanguageProvider } from '@/lib/LanguageContext'
+import { PageReadyProvider } from '@/lib/PageReadyContext'
 import { TailedCursor } from '@/components/ui/tailed-cursor'
 import PageTransition from '@/components/ui/page-transition'
 import Navbar from '@/components/navbar'
@@ -48,12 +49,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="font-sans antialiased bg-white">
-        <LanguageProvider>
-          <TailedCursor colors={["#000000"]} baseSpring={0.1} baseFriction={0.7} baseThickness={14} />
-          <PageTransition />
-          <Navbar />
-          {children}
-        </LanguageProvider>
+        <PageReadyProvider>
+          <LanguageProvider>
+            <TailedCursor colors={["#000000"]} baseSpring={0.1} baseFriction={0.7} baseThickness={14} />
+            <PageTransition />
+            <Navbar />
+            {children}
+          </LanguageProvider>
+        </PageReadyProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

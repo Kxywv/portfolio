@@ -52,7 +52,7 @@ export default function Experience() {
     {
       role: t.expRole,
       company: t.expCompany,
-      desc: language === 'en' ? 'Maintained and supported IT infrastructure' : 'Memelihara dan mendukung infrastruktur IT'
+      desc: language === 'en' ? 'Maintained IT infrastructure' : 'Memelihara infrastruktur IT'
     }
   ]
 

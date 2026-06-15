@@ -3,36 +3,56 @@
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Hatch } from 'ldrs/react'
+import { usePageReady } from '@/lib/PageReadyContext'
 import 'ldrs/react/Hatch.css'
 
 export default function PageTransition() {
   const pathname = usePathname()
-  const [isLoading, setIsLoading] = useState(false)
+  const { isPageReady, resetPageReady } = usePageReady()
+  const [isLoading, setIsLoading] = useState(true)
   const [isFading, setIsFading] = useState(false)
 
   useEffect(() => {
-    // Show loader on route change
+    // Reset page ready state and show loader on route change
+    resetPageReady()
     setIsLoading(true)
     setIsFading(false)
 
+    // Don't fade out until page is ready
     const timer = setTimeout(() => {
-      // Start fade-out after loader has time to animate
+      if (!isPageReady) {
+        // Page not ready yet, keep waiting but check again
+        return
+      }
+      // Page is ready, start fade-out
       setIsFading(true)
       const hideTimer = setTimeout(() => {
         setIsLoading(false)
         setIsFading(false)
-      }, 500) // matches fade-out duration
+      }, 500)
       return () => clearTimeout(hideTimer)
-    }, 800) // show loader long enough for full Hatch animation
+    }, 800)
 
     return () => clearTimeout(timer)
-  }, [pathname])
+  }, [pathname, resetPageReady])
+
+  useEffect(() => {
+    // When page becomes ready and loading is still active, start fade-out
+    if (isPageReady && isLoading && !isFading) {
+      setIsFading(true)
+      const hideTimer = setTimeout(() => {
+        setIsLoading(false)
+        setIsFading(false)
+      }, 500)
+      return () => clearTimeout(hideTimer)
+    }
+  }, [isPageReady, isLoading, isFading])
 
   if (!isLoading) return null
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-400 ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500 ${
         isFading ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >

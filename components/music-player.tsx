@@ -1,7 +1,11 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion } from 'motion/react'
 import Image from 'next/image'
+import ShapeBlur from './ShapeBlur'
+import ElasticSlider from './ElasticSlider'
+import AudioVisualizer from './AudioVisualizer'
 
 interface Track {
   title: string
@@ -37,81 +41,40 @@ const TRACKS: Track[] = [
   },
 ]
 
+const DEFAULT_VOLUME = 20 // percent
+
 export default function MusicPlayer() {
   const [currentTrack, setCurrentTrack] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [volume, setVolume] = useState(DEFAULT_VOLUME)
 
   const audioRef = useRef<HTMLAudioElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
+  const gainNodeRef = useRef<GainNode | null>(null)
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null)
-  const animationRef = useRef<number>(0)
 
   const track = TRACKS[currentTrack]
 
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current && audioRef.current) {
       const ctx = new AudioContext()
-      const analyser = ctx.createAnalyser()
-      analyser.fftSize = 256
+      const gain = ctx.createGain()
+      gain.gain.value = DEFAULT_VOLUME / 100
       const source = ctx.createMediaElementSource(audioRef.current)
-      source.connect(analyser)
-      analyser.connect(ctx.destination)
+      source.connect(gain)
+      gain.connect(ctx.destination)
       audioContextRef.current = ctx
-      analyserRef.current = analyser
+      gainNodeRef.current = gain
       sourceRef.current = source
     }
   }, [])
 
-  const drawVisualizer = useCallback(() => {
-    const canvas = canvasRef.current
-    const analyser = analyserRef.current
-    if (!canvas || !analyser) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const bufferLength = analyser.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
-
-    const draw = () => {
-      animationRef.current = requestAnimationFrame(draw)
-      analyser.getByteFrequencyData(dataArray)
-
-      const width = canvas.width
-      const height = canvas.height
-      ctx.clearRect(0, 0, width, height)
-
-      const barCount = 64
-      const barWidth = width / barCount - 2
-      const step = Math.floor(bufferLength / barCount)
-
-      for (let i = 0; i < barCount; i++) {
-        const value = dataArray[i * step]
-        const barHeight = (value / 255) * height * 0.9
-
-        const x = i * (barWidth + 2)
-        const y = height - barHeight
-
-        // Black gradient bars
-        const gradient = ctx.createLinearGradient(x, y, x, height)
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)')
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.3)')
-        ctx.fillStyle = gradient
-        ctx.beginPath()
-        ctx.roundRect(x, y, barWidth, barHeight, [3, 3, 0, 0])
-        ctx.fill()
-      }
-    }
-    draw()
-  }, [])
-
   useEffect(() => {
-    return () => {
-      cancelAnimationFrame(animationRef.current)
+    const audio = audioRef.current
+    if (audio) {
+      audio.volume = DEFAULT_VOLUME / 100
     }
   }, [])
 
@@ -119,12 +82,8 @@ export default function MusicPlayer() {
     const audio = audioRef.current
     if (!audio) return
 
-    const updateProgress = () => {
-      setProgress(audio.currentTime)
-    }
-    const updateDuration = () => {
-      setDuration(audio.duration)
-    }
+    const updateProgress = () => setProgress(audio.currentTime)
+    const updateDuration = () => setDuration(audio.duration)
 
     audio.addEventListener('timeupdate', updateProgress)
     audio.addEventListener('loadedmetadata', updateDuration)
@@ -149,10 +108,8 @@ export default function MusicPlayer() {
 
     if (isPlaying) {
       audio.pause()
-      cancelAnimationFrame(animationRef.current)
     } else {
       audio.play()
-      drawVisualizer()
     }
     setIsPlaying(!isPlaying)
   }
@@ -176,9 +133,8 @@ export default function MusicPlayer() {
         audioContextRef.current.resume()
       }
       audio.play()
-      drawVisualizer()
     }
-  }, [currentTrack, isPlaying, initAudioContext, drawVisualizer])
+  }, [currentTrack, isPlaying, initAudioContext])
 
   const formatTime = (s: number) => {
     if (!s || isNaN(s)) return '0:00'
@@ -195,100 +151,169 @@ export default function MusicPlayer() {
     setProgress(time)
   }
 
+  const handleVolumeChange = useCallback((val: number) => {
+    setVolume(val)
+    const v = val / 100
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value = v
+    }
+    if (audioRef.current) {
+      audioRef.current.volume = v
+    }
+  }, [])
+
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Player Card */}
-      <div className="bg-black rounded-2xl p-6 text-white shadow-2xl">
-        {/* Cover Art */}
-        <div className="relative w-full aspect-square rounded-xl overflow-hidden mb-5">
-          <Image
-            src={track.cover}
-            alt={track.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-
-        {/* Track Title */}
-        <h3 className="text-lg font-bold truncate mb-4">{track.title}</h3>
-
-        {/* Progress Bar */}
-        <div className="mb-4">
-          <input
-            type="range"
-            min={0}
-            max={duration || 0}
-            value={progress}
-            onChange={handleSeek}
-            className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer
-              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3
-              [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
-            style={{
-              background: `linear-gradient(to right, #fff ${duration ? (progress / duration) * 100 : 0}%, rgba(255,255,255,0.2) ${duration ? (progress / duration) * 100 : 0}%)`,
-            }}
-          />
-          <div className="flex justify-between text-xs text-white/60 mt-1">
-            <span>{formatTime(progress)}</span>
-            <span>{formatTime(duration)}</span>
+      {/* Shape Blur Visualizer with Controls + Audio Visualizer */}
+      <div className="relative w-full rounded-3xl overflow-visible mb-8" style={{ aspectRatio: '1' }}>
+        {/* Main Container */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          {/* Audio Visualizer Ring - Absolute centered */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <AudioVisualizer
+              audioContext={audioContextRef.current}
+              gainNode={gainNodeRef.current}
+              isPlaying={isPlaying}
+            />
           </div>
+
+          {/* Shape Blur Visualizer with Controls */}
+          <ShapeBlur
+            variation={0}
+            pixelRatioProp={typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1}
+            shapeSize={1.2}
+            roundness={0.4}
+            borderSize={0.05}
+            circleSize={0.3}
+            circleEdge={0.5}
+            className="w-5/6 h-5/6"
+          >
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
+              {/* Cover Art */}
+              <div className="relative w-28 h-28 rounded-xl overflow-hidden shadow-md border border-white/5">
+                <Image
+                  src={track.cover}
+                  alt={track.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center gap-5 z-20">
+                {/* Previous */}
+                <button
+                  onClick={handlePrev}
+                  className="text-white hover:text-white/70 transition-colors"
+                  aria-label="Previous"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                  </svg>
+                </button>
+
+                {/* Play/Pause */}
+                <button
+                  onClick={togglePlay}
+                  className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                >
+                  {isPlaying ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Next */}
+                <button
+                  onClick={handleNext}
+                  className="text-white hover:text-white/70 transition-colors"
+                  aria-label="Next"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </ShapeBlur>
         </div>
-
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-8">
-          {/* Previous */}
-          <button
-            onClick={handlePrev}
-            className="text-white/70 hover:text-white transition-colors"
-            aria-label="Previous"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
-            </svg>
-          </button>
-
-          {/* Play/Pause */}
-          <button
-            onClick={togglePlay}
-            className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-          >
-            {isPlaying ? (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-              </svg>
-            ) : (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-
-          {/* Next */}
-          <button
-            onClick={handleNext}
-            className="text-white/70 hover:text-white transition-colors"
-            aria-label="Next"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Now Playing Indicator */}
-        <p className="text-center text-xs text-white/40 mt-4">
-          {isPlaying ? 'Now Playing' : 'Paused'} — {currentTrack + 1} / {TRACKS.length}
-        </p>
       </div>
 
-      {/* Audio Visualizer */}
-      <div className="mt-6 bg-black/5 rounded-xl p-4 border border-gray-200">
-        <canvas
-          ref={canvasRef}
-          width={512}
-          height={120}
-          className="w-full h-24 rounded-lg"
+      {/* Track Info */}
+      <h3 className="text-lg font-bold truncate mb-4 text-black text-center">{track.title}</h3>
+
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <input
+          type="range"
+          min={0}
+          max={duration || 0}
+          value={progress}
+          onChange={handleSeek}
+          className="w-full h-1 bg-gray-300 rounded-full appearance-none cursor-pointer
+            [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3
+            [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black"
+          style={{
+            background: `linear-gradient(to right, #000 ${duration ? (progress / duration) * 100 : 0}%, rgb(209, 213, 219) ${duration ? (progress / duration) * 100 : 0}%)`,
+          }}
+        />
+        <div className="flex justify-between text-xs text-gray-600 mt-2">
+          <span>{formatTime(progress)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+
+      {/* Now Playing Indicator */}
+      <p className="text-center text-xs text-gray-500 mb-6">
+        {isPlaying ? 'Now Playing' : 'Paused'} — {currentTrack + 1} / {TRACKS.length}
+      </p>
+
+      {/* Volume Control */}
+      <div className="px-2">
+        <ElasticSlider
+          leftIcon={
+            <motion.div
+              animate={{ scale: volume === 0 ? 1.1 : 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {volume === 0 ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <line x1="23" y1="9" x2="17" y2="15" />
+                  <line x1="17" y1="9" x2="23" y2="15" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                </svg>
+              )}
+            </motion.div>
+          }
+          rightIcon={
+            <motion.div
+              animate={{ scale: volume > 50 ? 1.1 : 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            </motion.div>
+          }
+          startingValue={0}
+          defaultValue={DEFAULT_VOLUME}
+          maxValue={100}
+          isStepped={false}
+          onValueChange={handleVolumeChange}
+          className="text-black"
         />
       </div>
 
