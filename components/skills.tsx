@@ -37,7 +37,7 @@ const programmingData: SkillItem[] = [
   {
     nameEn: 'PHP',
     nameId: 'PHP',
-    level: 65,
+    level: 75,
     descEn: 'Building server-side logic, APIs, and dynamic web applications.',
     descId: 'Membangun logika sisi server, API, dan aplikasi web dinamis.',
     logos: [
@@ -47,7 +47,7 @@ const programmingData: SkillItem[] = [
   {
     nameEn: 'JS/NodeJS',
     nameId: 'JS/NodeJS',
-    level: 75,
+    level: 60,
     descEn: 'Developing backend services and API gateways using Express and Node.js environment.',
     descId: 'Mengembangkan layanan backend dan API gateway menggunakan lingkungan Express dan Node.js.',
     logos: [
@@ -81,7 +81,7 @@ const hardSkillData: SkillItem[] = [
   {
     nameEn: 'PC Hardware',
     nameId: 'Perangkat Komputer',
-    level: 80,
+    level: 90,
     descEn: 'Understanding PC hardware architectures, custom builds, cable management, and diagnostics.',
     descId: 'Memahami arsitektur hardware PC, kustomisasi rakitan, manajemen kabel, dan diagnosa.',
     logos: [
@@ -104,7 +104,7 @@ const softSkillData: SkillItem[] = [
   {
     nameEn: 'Teamwork',
     nameId: 'Kerja Sama Tim',
-    level: 80,
+    level: 70,
     descEn: 'Fostering collective collaboration to deliver project goals with agile execution.',
     descId: 'Mendorong kolaborasi kolektif untuk mencapai tujuan proyek dengan eksekusi gesit.',
     logos: [
@@ -124,7 +124,7 @@ const softSkillData: SkillItem[] = [
   {
     nameEn: 'Problem Solving',
     nameId: 'Pemecahan Masalah',
-    level: 78,
+    level: 70,
     descEn: 'Deconstructing complex engineering workflows into direct analytical resolutions.',
     descId: 'Mengurai alur kerja rekayasa yang rumit menjadi resolusi analitis langsung.',
     logos: [

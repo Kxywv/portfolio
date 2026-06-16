@@ -8,8 +8,8 @@ import TextType from '@/components/TextType'
 import Particles from '@/components/Particles'
 
 // Roles that loop after the greeting
-const ROLES_EN = ['Music Producer', 'Multi-Instrumentalist', 'Web Developer']
-const ROLES_ID = ['Produser Musik', 'Multi-Instrumentalis', 'Web Developer']
+const ROLES_EN = ['Music Producer.', 'Multi-Instrumentalist.', 'Web Developer.']
+const ROLES_ID = ['Produser Musik.', 'Multi-Instrumentalis.', 'Web Developer.']
 
 function RoleLoop({ roles }: { roles: string[] }) {
   const [roleIndex, setRoleIndex] = useState(0)
@@ -25,7 +25,7 @@ function RoleLoop({ roles }: { roles: string[] }) {
   }, [roles])
 
   useEffect(() => {
-    const holdTime = roles[roleIndex].length * 60 + 1200
+    const holdTime = roles[roleIndex].length * 60 + 900
     const holdTimer = setTimeout(() => {
       setFading(true)
       setTimeout(() => {
