@@ -25,7 +25,7 @@ function RoleLoop({ roles }: { roles: string[] }) {
   }, [roles])
 
   useEffect(() => {
-    const holdTime = roles[roleIndex].length * 60 + 2200
+    const holdTime = roles[roleIndex].length * 60 + 1200
     const holdTimer = setTimeout(() => {
       setFading(true)
       setTimeout(() => {
@@ -175,17 +175,18 @@ export default function Hero() {
   const greetingLen = t.greeting.length
   useEffect(() => {
     setGreetingDone(false)
-    const timer = setTimeout(() => setGreetingDone(true), greetingLen * 60 + 500)
+    // Add 1000ms to the timer to account for the startDelay of the greeting
+    const timer = setTimeout(() => setGreetingDone(true), greetingLen * 60 + 1500)
     return () => clearTimeout(timer)
   }, [language, greetingLen])
 
   return (
-    <section id="hero" className="relative min-h-screen bg-white flex items-center justify-center px-6 py-20 overflow-hidden">
+    <section id="hero" className="relative min-h-screen bg-transparent flex items-center justify-center px-6 py-20 overflow-hidden">
 
       {/* Reactbits Particles background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Particles
-          particleCount={180}
+          particleCount={500}
           particleSpread={10}
           speed={0.08}
           particleColors={['#000000', '#333333', '#666666']}
@@ -193,6 +194,8 @@ export default function Hero() {
           particleBaseSize={60}
           sizeRandomness={1.2}
           disableRotation={false}
+          moveParticlesOnHover={true}
+          particleHoverFactor={1.5}
         />
       </div>
 
@@ -200,7 +203,7 @@ export default function Hero() {
         <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
           {/* Greeting — types once */}
           <h1 className="text-5xl md:text-6xl font-bold text-black mb-3 leading-tight tracking-tight">
-            <TextType key={language} text={t.greeting} />
+            <TextType key={language} text={t.greeting} startDelay={1000} />
           </h1>
 
           {/* Role — starts after greeting, then loops */}

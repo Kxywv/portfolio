@@ -42,7 +42,7 @@ export default function Projects() {
           {projects.map((project, index) => (
             <div
               key={index}
-              className="bg-gray-50 border-2 border-black rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              className="bg-gray-50 border-2 border-black rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 max-w-xl mx-auto w-full"
             >
               <div className="relative w-full h-36 md:h-44 bg-black overflow-hidden">
                 <Image

@@ -36,9 +36,9 @@ export default function HobbyPage() {
   return (
     <PageContent>
       <main className="w-full relative">
-        <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-screen z-0 pointer-events-none overflow-hidden">
           <Particles
-            particleCount={180}
+            particleCount={500}
             particleSpread={10}
             speed={0.08}
             particleColors={['#000000', '#333333', '#666666']}
@@ -46,6 +46,8 @@ export default function HobbyPage() {
             particleBaseSize={60}
             sizeRandomness={1.2}
             disableRotation={false}
+            moveParticlesOnHover={true}
+            particleHoverFactor={1.5}
           />
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>

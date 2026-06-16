@@ -16,7 +16,7 @@
 
 ## Directory Structure
 - `app/`: Routing, layout, and global styles
-  - `layout.tsx` — Root layout with fonts, language provider, cursor, analytics, PageReadyProvider, and global Particles
+  - `layout.tsx` — Root layout with fonts, language provider, analytics, and PageReadyProvider
   - `page.tsx` — Main home page (Hero, Projects, Footer)
   - `hobby/page.tsx` — Music player and hobby showcase
   - `about/page.tsx` — Bio, skills, and experience sections
@@ -28,7 +28,7 @@
   - `projects.tsx` — Project showcase with external screenshot previews
   - `experience.tsx` — Work experience and education timeline with scroll animations
   - `music-player.tsx` — Music player with visualizer integration
-  - `Particles.tsx` — THREE.js/ogl WebGL shader component for background particle effects (used globally in layout.tsx)
+  - `Particles.tsx` — Reactbits WebGL shader component for background particle effects (used individually in Hero, About, and Hobby pages)
   - `SplitText.tsx` — Text animation component for splitting and animating characters
   - `TextType.tsx` — Typewriter effect text component
   - `AboutBio.tsx` — About me bio section
@@ -36,7 +36,6 @@
   - `PageContent.tsx` — Wrapper component that auto-marks page as ready for loading sync
 - `components/ui/`: Reusable UI primitives
   - `button.tsx` — shadcn button component
-  - `tailed-cursor.tsx` — Custom cursor trail effect (ogl-based)
   - `page-transition.tsx` — Loading overlay with sync to PageReadyContext
 - `lib/`: Utilities and context
   - `LanguageContext.tsx` — EN/ID language context with localStorage persistence
@@ -50,14 +49,14 @@
 - **Animations:** 
   - Scroll-triggered effects use `IntersectionObserver` or Framer Motion/custom hooks.
   - Text animations use `SplitText` and `TextType`.
-- **Background Effects:** `Particles.tsx` uses `ogl` (WebGL) and runs globally in `app/layout.tsx`. It handles strict mode double-mounting by clearing the container properly on init and keeping context active.
+- **Background Effects:** `Particles.tsx` uses WebGL and runs in specific sections (`hero.tsx`, `about/page.tsx`, `hobby/page.tsx`). It tracks mouse movement globally via `window` listeners to allow interactivity even under pointer-events-none wrappers.
 - **Hydration:** `<html>` tag uses `suppressHydrationWarning` for browser extension compatibility. Icon metadata uses non-empty `url` values.
 - **Responsiveness:** Tailwind utility classes (`md:`, `lg:`) handle mobile-first responsive design.
 
 ## Known Issues / Gotchas
 - **WebGL Contexts:** React 18+ strict mode double-mounts effects. In custom WebGL components (like Particles), clean DOM before init instead of fully dropping WebGL contexts during effect cleanup to avoid context loss.
 - **Text Clipping:** When animating text with transforms (like `SplitText`), ensure parent containers use `overflow-visible` and have slight padding (e.g., `px-2`) so the first/last characters aren't clipped by bounding boxes.
-- **Z-Index Stacking:** The global particles background has `z-0`. Page content should be wrapped with `position: relative, zIndex: 1` to stay clickable on top of the particles.
+- **Z-Index Stacking:** The particles background has `z-0` and uses `absolute top-0 w-full h-screen` to prevent it from following the scroll. Page content should be wrapped with `position: relative, zIndex: 1` or higher to stay clickable and visible on top of the particles.
 
 ## Design Reference
 - See `DESIGN.md` (if available) for the full visual design system, color palette, typography, and component specs.

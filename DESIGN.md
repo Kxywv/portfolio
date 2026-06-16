@@ -54,8 +54,7 @@
 - **Text Animation:** Character-by-character appearance with `transform` and `opacity` (used in `SplitText`)
 
 ## Visual Effects
-- **Global Background:** Interactive WebGL particles (black particles on white background, low opacity/speed)
-- **Cursor:** Custom trailing cursor effect (black trail)
+- **Section Backgrounds:** Interactive WebGL particles (reacts to mouse movement, placed as absolute backgrounds on Hero, About, and Hobby sections)
 - **Page Transitions:** Hatch loading animation on full white overlay (`z-[9999]`)
 - **Glassmorphism:** Navigation uses semi-transparent backgrounds with `backdrop-blur-[24px]`
 

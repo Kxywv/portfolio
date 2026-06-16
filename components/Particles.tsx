@@ -118,13 +118,12 @@ const Particles: React.FC<ParticlesProps> = ({
     resize()
 
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = container.getBoundingClientRect()
       mouseRef.current = {
-        x: ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        y: -(((e.clientY - rect.top) / rect.height) * 2 - 1),
+        x: (e.clientX / window.innerWidth) * 2 - 1,
+        y: -(e.clientY / window.innerHeight) * 2 - 1,
       }
     }
-    if (moveParticlesOnHover) container.addEventListener('mousemove', handleMouseMove)
+    if (moveParticlesOnHover) window.addEventListener('mousemove', handleMouseMove)
 
     const count = particleCount
     const positions = new Float32Array(count * 3)
@@ -196,7 +195,7 @@ const Particles: React.FC<ParticlesProps> = ({
 
     return () => {
       window.removeEventListener('resize', resize)
-      if (moveParticlesOnHover) container.removeEventListener('mousemove', handleMouseMove)
+      if (moveParticlesOnHover) window.removeEventListener('mousemove', handleMouseMove)
       cancelAnimationFrame(animId)
       renderer.gl.getExtension('WEBGL_lose_context')?.loseContext()
       while (container.firstChild) container.removeChild(container.firstChild)
