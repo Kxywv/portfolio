@@ -23,7 +23,7 @@ export default function AboutBio() {
   const t = translations[language]
 
   return (
-    <section className="relative min-h-[55vh] flex items-center justify-center px-6 py-20 bg-white">
+    <section className="relative min-h-[55vh] flex items-center justify-center px-6 py-20 bg-transparent">
       <div className="max-w-3xl w-full flex flex-col items-center gap-10 overflow-visible">
         {/* Heading */}
         <h2 className="text-4xl md:text-5xl font-bold text-black overflow-visible pb-2">

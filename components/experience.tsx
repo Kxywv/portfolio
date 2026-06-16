@@ -80,7 +80,7 @@ export default function Experience() {
   ]
 
   return (
-    <section ref={sectionRef} id="experience" className="min-h-screen bg-white flex items-center justify-center px-6 py-20">
+    <section ref={sectionRef} id="experience" className="min-h-screen bg-transparent flex items-center justify-center px-6 py-20">
       <div className="max-w-5xl w-full">
         <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-16">
           {t.title}

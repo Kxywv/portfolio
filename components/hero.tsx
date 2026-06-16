@@ -199,7 +199,7 @@ export default function Hero() {
       <div className="relative z-10 max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
         <div className="flex-1 flex flex-col justify-center">
           {/* Greeting — types once */}
-          <h1 className="text-5xl md:text-6xl font-bold text-black mb-3 leading-tight tracking-tight animate-fade-in-up">
+          <h1 className="text-5xl md:text-6xl font-bold text-black mb-3 leading-tight tracking-tight">
             <TextType key={language} text={t.greeting} />
           </h1>
 

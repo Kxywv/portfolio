@@ -4,6 +4,7 @@ import MusicPlayer from '@/components/music-player'
 import Footer from '@/components/footer'
 import PageContent from '@/components/PageContent'
 import SplitText from '@/components/SplitText'
+import Particles from '@/components/Particles'
 import { useEffect, useState } from 'react'
 
 export default function HobbyPage() {
@@ -16,8 +17,20 @@ export default function HobbyPage() {
   return (
     <PageContent>
       <main className="w-full relative">
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <Particles
+            particleCount={180}
+            particleSpread={10}
+            speed={0.08}
+            particleColors={['#000000', '#333333', '#666666']}
+            alphaParticles={true}
+            particleBaseSize={60}
+            sizeRandomness={1.2}
+            disableRotation={false}
+          />
+        </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <section className="min-h-screen bg-white flex items-center justify-center px-6 py-24">
+          <section className="min-h-screen bg-transparent flex items-center justify-center px-6 py-24">
             <div className="max-w-2xl w-full">
               <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-4 overflow-visible px-2">
                 {mounted && <SplitText text="Hobby" />}
