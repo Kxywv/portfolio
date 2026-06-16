@@ -41,7 +41,7 @@ export default function TextType({ text, className = '', delay = 25 }: TextTypeP
             opacity: idx < visibleCount ? 1 : 0,
             transform: idx < visibleCount ? 'translateY(0)' : 'translateY(8px)',
             display: 'inline-block',
-            transition: 'opacity 0.15s ease, transform 0.15s ease',
+            transition: 'opacity 0.6s ease, transform 0.6s ease',
             whiteSpace: char === ' ' ? 'pre' : undefined,
           }}
         >

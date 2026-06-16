@@ -197,21 +197,21 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center items-center md:items-start text-center md:text-left">
           {/* Greeting — types once */}
           <h1 className="text-5xl md:text-6xl font-bold text-black mb-3 leading-tight tracking-tight">
             <TextType key={language} text={t.greeting} />
           </h1>
 
           {/* Role — starts after greeting, then loops */}
-          <p className="text-2xl md:text-3xl font-semibold text-black mb-5 leading-snug tracking-wide animate-fade-in-up animation-delay-200 min-h-[1.5em]">
+          <p className="text-2xl md:text-3xl font-semibold text-black mb-5 leading-snug tracking-wide min-h-[1.5em]">
             {greetingDone && <RoleLoop roles={roles} />}
           </p>
 
-          <div className="mb-6 animate-fade-in-up animation-delay-400" />
+          <div className="mb-6" />
 
           {/* Social links */}
-          <div className="animate-fade-in" style={{ width: '240px' }}>
+          <div className="animate-fade-in w-[240px] flex justify-center md:justify-start">
             <LogoLoop
               logos={logoItems}
               speed={40}
@@ -227,8 +227,8 @@ export default function Hero() {
         </div>
 
         {/* Profile image with fluid canvas */}
-        <div className="flex-1 flex justify-center animate-fade-in-right animation-delay-500">
-          <div className="relative w-80 h-80 md:w-96 md:h-96">
+        <div className="flex-1 flex justify-center animate-fade-in-right animation-delay-500 mt-8 md:mt-0">
+          <div className="relative w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96">
             <canvas ref={fluidCanvasRef} className="absolute inset-0 w-full h-full rounded-full" />
             <Image
               src="/profilea.png"

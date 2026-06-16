@@ -34,7 +34,7 @@ export default function AboutBio() {
         <div className="flex flex-col sm:flex-row items-center gap-6 w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-6 shadow-sm">
           <div className="relative w-20 h-20 rounded-full overflow-hidden shrink-0 ring-2 ring-black/10">
             <Image
-              src="/profilea.png"
+              src="/heheabout.png"
               alt="Muhammad Padhillah"
               fill
               className="object-cover"
