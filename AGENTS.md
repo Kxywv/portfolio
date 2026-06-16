@@ -11,26 +11,28 @@
 - Styling: Tailwind CSS v4
 - UI Library: shadcn 4.8+
 - Icons: lucide-react
-- Fonts: Geist Sans + Geist Mono (via `next/font/google`)
+- Fonts: Poppins (via `next/font/google`)
 - Analytics: @vercel/analytics (production only)
 
 ## Directory Structure
 - `app/`: Routing, layout, and global styles
-  - `layout.tsx` — Root layout with fonts, language provider, cursor, analytics, PageReadyProvider
-  - `page.tsx` — Main page assembling all sections
+  - `layout.tsx` — Root layout with fonts, language provider, cursor, analytics, PageReadyProvider, and global Particles
+  - `page.tsx` — Main home page (Hero, Projects, Footer)
   - `hobby/page.tsx` — Music player and hobby showcase
-  - `about/page.tsx` — Skills and experience sections
+  - `about/page.tsx` — Bio, skills, and experience sections
   - `globals.css` — Tailwind v4 theme, shadcn CSS variables, light/dark tokens
 - `components/`: Section components (all client-side)
   - `navbar.tsx` — Fixed navigation with scroll detection and language switcher
-  - `hero.tsx` — Hero section with canvas particle animations and profile image
+  - `hero.tsx` — Hero section with profile image, role text type animation, and fluid canvas
   - `skills.tsx` — Tabbed skill display (Programming / Hard / Soft) with animated bars
   - `projects.tsx` — Project showcase with external screenshot previews
   - `experience.tsx` — Work experience and education timeline with scroll animations
-  - `music-player.tsx` — Music player with ShapeBlur visualizer, AudioVisualizer ring, and ElasticSlider volume
-  - `ShapeBlur.tsx` — THREE.js WebGL shader component (black shape) with children support
-  - `AudioVisualizer.tsx` — SVG-based frequency bar visualizer that rings around ShapeBlur outline
-  - `ElasticSlider.tsx` — Framer Motion elastic slider from ReactBits with dynamic volume icons
+  - `music-player.tsx` — Music player with visualizer integration
+  - `Particles.tsx` — THREE.js/ogl WebGL shader component for background particle effects (used globally in layout.tsx)
+  - `SplitText.tsx` — Text animation component for splitting and animating characters
+  - `TextType.tsx` — Typewriter effect text component
+  - `AboutBio.tsx` — About me bio section
+  - `FadeInOnLoad.tsx` — Wrapper for scroll/load fade animations
   - `PageContent.tsx` — Wrapper component that auto-marks page as ready for loading sync
 - `components/ui/`: Reusable UI primitives
   - `button.tsx` — shadcn button component
@@ -43,13 +45,19 @@
 - `public/`: Static assets (icons, profile image, project preview, music covers)
 
 ## Key Patterns
-- All interactive components use `'use client'` directive
-- Language support: EN/ID via `LanguageContext`, default is `id` (Indonesian)
-- Translations are defined inline per component (no i18n library)
-- Animations use `IntersectionObserver` for scroll-triggered effects
-- Canvas-based particle effects in hero section (requestAnimationFrame loop)
-- `<html>` tag uses `suppressHydrationWarning` for browser extension compatibility
-- Icon metadata must always have non-empty `url` values to avoid hydration warnings
+- **Client Components:** All interactive components must use `'use client'` directive.
+- **Language Support:** EN/ID handled via `LanguageContext`. Default is `id` (Indonesian). Translations are defined inline per component.
+- **Animations:** 
+  - Scroll-triggered effects use `IntersectionObserver` or Framer Motion/custom hooks.
+  - Text animations use `SplitText` and `TextType`.
+- **Background Effects:** `Particles.tsx` uses `ogl` (WebGL) and runs globally in `app/layout.tsx`. It handles strict mode double-mounting by clearing the container properly on init and keeping context active.
+- **Hydration:** `<html>` tag uses `suppressHydrationWarning` for browser extension compatibility. Icon metadata uses non-empty `url` values.
+- **Responsiveness:** Tailwind utility classes (`md:`, `lg:`) handle mobile-first responsive design.
+
+## Known Issues / Gotchas
+- **WebGL Contexts:** React 18+ strict mode double-mounts effects. In custom WebGL components (like Particles), clean DOM before init instead of fully dropping WebGL contexts during effect cleanup to avoid context loss.
+- **Text Clipping:** When animating text with transforms (like `SplitText`), ensure parent containers use `overflow-visible` and have slight padding (e.g., `px-2`) so the first/last characters aren't clipped by bounding boxes.
+- **Z-Index Stacking:** The global particles background has `z-0`. Page content should be wrapped with `position: relative, zIndex: 1` to stay clickable on top of the particles.
 
 ## Design Reference
-- See `DESIGN.md` for the full visual design system, color palette, typography, and component specs
+- See `DESIGN.md` (if available) for the full visual design system, color palette, typography, and component specs.

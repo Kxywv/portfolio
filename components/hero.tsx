@@ -1,130 +1,115 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '@/lib/LanguageContext'
+import { LogoLoop, LogoItem } from '@/components/LogoLoop'
+import TextType from '@/components/TextType'
+import Particles from '@/components/Particles'
 
-const TITLES = ['Web Developer', 'Music Producer', 'Multi-Instrumentalist']
+// Roles that loop after the greeting
+const ROLES_EN = ['Music Producer', 'Multi-Instrumentalist', 'Web Developer']
+const ROLES_ID = ['Produser Musik', 'Multi-Instrumentalis', 'Web Developer']
+
+function RoleLoop({ roles }: { roles: string[] }) {
+  const [roleIndex, setRoleIndex] = useState(0)
+  const [fading, setFading] = useState(false)
+  const [displayIndex, setDisplayIndex] = useState(0)
+  const [textKey, setTextKey] = useState(0)
+
+  useEffect(() => {
+    setRoleIndex(0)
+    setDisplayIndex(0)
+    setTextKey(k => k + 1)
+    setFading(false)
+  }, [roles])
+
+  useEffect(() => {
+    const holdTime = roles[roleIndex].length * 60 + 2200
+    const holdTimer = setTimeout(() => {
+      setFading(true)
+      setTimeout(() => {
+        const next = (roleIndex + 1) % roles.length
+        setRoleIndex(next)
+        setDisplayIndex(next)
+        setTextKey(k => k + 1)
+        setFading(false)
+      }, 350)
+    }, holdTime)
+    return () => clearTimeout(holdTimer)
+  }, [roleIndex, roles])
+
+  return (
+    <span
+      style={{
+        opacity: fading ? 0 : 1,
+        transition: 'opacity 0.35s ease',
+        display: 'inline-block',
+        minWidth: '280px',
+      }}
+    >
+      <TextType key={textKey} text={roles[displayIndex]} />
+    </span>
+  )
+}
 
 export default function Hero() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const fluidCanvasRef = useRef<HTMLCanvasElement>(null)
   const { language } = useLanguage()
-  const [displayText, setDisplayText] = useState('')
-  const [titleIndex, setTitleIndex] = useState(0)
-  const [charIndex, setCharIndex] = useState(0)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [greetingDone, setGreetingDone] = useState(false)
 
   const translations = {
-    en: {
-      greeting: "Hey, I'm Key",
-      bio: 'Muhammad Padhillah, 20 years old Web Developer, Multi-Instrumentalist, Producer, currently studying in UPI-YPTK University in Padang, Indonesia. Born in 2005, April, 3 In Jujun, Kerinci, Indonesia.'
-    },
-    id: {
-      greeting: 'Hai, Saya Key',
-      bio: 'Muhammad Padhillah, berusia 20 tahun, seorang Web Developer, Multi-Instrumentalis, dan Produser. Saat ini sedang menempuh pendidikan di Universitas UPI-YPTK Padang, Indonesia. Lahir pada 3 April 2005 di Jujun, Kerinci, Indonesia.'
-    }
+    en: { greeting: "Hey, I'm Key" },
+    id: { greeting: 'Hai, Saya Key' },
   }
 
   const t = translations[language]
+  const roles = language === 'en' ? ROLES_EN : ROLES_ID
 
-  useEffect(() => {
-    const current = TITLES[titleIndex]
+  const logoItems: LogoItem[] = [
+    {
+      node: (
+        <img src="/instagram.png" alt="Instagram" style={{ height: '28px', width: '28px', objectFit: 'contain' }} />
+      ),
+      href: 'https://www.instagram.com/key.wvy/',
+      ariaLabel: 'Instagram',
+    },
+    {
+      node: (
+        <img src="/tiktok.png" alt="TikTok" style={{ height: '28px', width: '28px', objectFit: 'contain' }} />
+      ),
+      href: 'https://www.tiktok.com/@hplss37',
+      ariaLabel: 'TikTok',
+    },
+    {
+      node: (
+        <img src="/github.png" alt="GitHub" style={{ height: '28px', width: '28px', objectFit: 'contain' }} />
+      ),
+      href: 'https://github.com/Kxywv',
+      ariaLabel: 'GitHub',
+    },
+    {
+      node: (
+        <span className="relative group/discord inline-flex items-center justify-center">
+          <img src="/discord.png" alt="Discord" style={{ height: '28px', width: '28px', objectFit: 'contain' }} />
+          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded pointer-events-none opacity-0 group-hover/discord:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            okayw
+          </span>
+        </span>
+      ),
+      ariaLabel: 'Discord',
+    },
+  ]
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        // Typing
-        setDisplayText(current.slice(0, charIndex + 1))
-        setCharIndex(prev => prev + 1)
-        if (charIndex + 1 === current.length) {
-          // Finished typing — pause then start deleting
-          setTimeout(() => setIsDeleting(true), 1500)
-        }
-      } else {
-        // Deleting
-        setDisplayText(current.slice(0, charIndex - 1))
-        setCharIndex(prev => prev - 1)
-        if (charIndex - 1 === 0) {
-          setIsDeleting(false)
-          setTitleIndex(prev => (prev + 1) % TITLES.length)
-        }
-      }
-    }, isDeleting ? 50 : 100)
-
-    return () => clearTimeout(timeout)
-  }, [charIndex, isDeleting, titleIndex])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    let width = canvas.width = canvas.offsetWidth
-    let height = canvas.height = canvas.offsetHeight
-
-    const resize = () => {
-      width = canvas.width = canvas.offsetWidth
-      height = canvas.height = canvas.offsetHeight
-    }
-    window.addEventListener('resize', resize)
-
-    const NUM = 50
-    const particles: {
-      x: number; y: number; vx: number;
-      len: number; alpha: number; speed: number
-    }[] = []
-
-    for (let i = 0; i < NUM; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: 1.5 + Math.random() * 2.5,
-        len: 80 + Math.random() * 160,
-        alpha: 0.08 + Math.random() * 0.16,
-        speed: 1 + Math.random() * 2,
-      })
-    }
-
-    let frame: number
-    const draw = () => {
-      ctx.clearRect(0, 0, width, height)
-      for (const p of particles) {
-        ctx.beginPath()
-        const grad = ctx.createLinearGradient(p.x - p.len, p.y, p.x, p.y)
-        grad.addColorStop(0, `rgba(0,0,0,0)`)
-        grad.addColorStop(1, `rgba(0,0,0,${p.alpha})`)
-        ctx.strokeStyle = grad
-        ctx.lineWidth = 2.5
-        ctx.moveTo(p.x - p.len, p.y)
-        ctx.lineTo(p.x, p.y)
-        ctx.stroke()
-
-        p.x += p.vx * p.speed
-        if (p.x - p.len > width) {
-          p.x = -p.len
-          p.y = Math.random() * height
-        }
-      }
-      frame = requestAnimationFrame(draw)
-    }
-    draw()
-
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', resize)
-    }
-  }, [])
-
+  // Fluid canvas around profile image
   useEffect(() => {
     const canvas = fluidCanvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d', { willReadFrequently: true })
     if (!ctx) return
 
-    let width = canvas.width = canvas.offsetWidth
-    let height = canvas.height = canvas.offsetHeight
+    let width = (canvas.width = canvas.offsetWidth)
+    let height = (canvas.height = canvas.offsetHeight)
     const centerX = width / 2
     const centerY = height / 2
 
@@ -135,15 +120,8 @@ export default function Hero() {
     window.addEventListener('resize', resize)
 
     class FluidParticle {
-      x: number
-      y: number
-      vx: number
-      vy: number
-      ax: number
-      ay: number
-      lifetime: number
-      maxLifetime: number
-      radius: number
+      x: number; y: number; vx: number; vy: number
+      ax: number; ay: number; lifetime: number; maxLifetime: number; radius: number
 
       constructor() {
         const angle = Math.random() * Math.PI * 2
@@ -160,108 +138,95 @@ export default function Hero() {
       }
 
       update() {
-        this.vx += this.ax
-        this.vy += this.ay
-        this.x += this.vx
-        this.y += this.vy
+        this.vx += this.ax; this.vy += this.ay
+        this.x += this.vx; this.y += this.vy
         this.lifetime++
       }
 
       draw(ctx: CanvasRenderingContext2D) {
-        const progress = this.lifetime / this.maxLifetime
-        const alpha = (1 - progress) * 0.4
-        ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`
+        const p = this.lifetime / this.maxLifetime
+        ctx.fillStyle = `rgba(0,0,0,${(1 - p) * 0.4})`
         ctx.beginPath()
-        ctx.arc(this.x, this.y, this.radius * (1 - progress * 0.5), 0, Math.PI * 2)
+        ctx.arc(this.x, this.y, this.radius * (1 - p * 0.5), 0, Math.PI * 2)
         ctx.fill()
       }
 
-      isDead() {
-        return this.lifetime >= this.maxLifetime
-      }
+      isDead() { return this.lifetime >= this.maxLifetime }
     }
 
     let particles: FluidParticle[] = []
     let frame: number
-    let spawnCounter = 0
+    let counter = 0
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height)
-
-      spawnCounter++
-      if (spawnCounter % 4 === 0 && particles.length < 60) {
-        particles.push(new FluidParticle())
-      }
-
+      counter++
+      if (counter % 4 === 0 && particles.length < 60) particles.push(new FluidParticle())
       particles = particles.filter(p => !p.isDead())
-      for (const p of particles) {
-        p.update()
-        p.draw(ctx)
-      }
-
+      for (const p of particles) { p.update(); p.draw(ctx) }
       frame = requestAnimationFrame(draw)
     }
     draw()
 
-    return () => {
-      cancelAnimationFrame(frame)
-      window.removeEventListener('resize', resize)
-    }
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('resize', resize) }
   }, [])
+
+  // Start RoleLoop after greeting finishes typing
+  const greetingLen = t.greeting.length
+  useEffect(() => {
+    setGreetingDone(false)
+    const timer = setTimeout(() => setGreetingDone(true), greetingLen * 60 + 500)
+    return () => clearTimeout(timer)
+  }, [language, greetingLen])
 
   return (
     <section id="hero" className="relative min-h-screen bg-white flex items-center justify-center px-6 py-20 overflow-hidden">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
+
+      {/* Reactbits Particles background */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Particles
+          particleCount={180}
+          particleSpread={10}
+          speed={0.08}
+          particleColors={['#000000', '#333333', '#666666']}
+          alphaParticles={true}
+          particleBaseSize={60}
+          sizeRandomness={1.2}
+          disableRotation={false}
+        />
+      </div>
+
       <div className="relative z-10 max-w-7xl w-full flex flex-col md:flex-row items-center justify-between gap-12">
-        {/* Left Content */}
         <div className="flex-1 flex flex-col justify-center">
+          {/* Greeting — types once */}
           <h1 className="text-5xl md:text-6xl font-bold text-black mb-3 leading-tight tracking-tight animate-fade-in-up">
-            {t.greeting}
+            <TextType key={language} text={t.greeting} />
           </h1>
 
-          <p className="text-2xl md:text-3xl font-semibold text-black mb-5 leading-snug tracking-wide animate-fade-in-up animation-delay-200">
-            <span className="typewriter-text inline-block min-h-[1.2em]">
-              {displayText}
-            </span>
-            <span className="typewriter-cursor text-black">|</span>
+          {/* Role — starts after greeting, then loops */}
+          <p className="text-2xl md:text-3xl font-semibold text-black mb-5 leading-snug tracking-wide animate-fade-in-up animation-delay-200 min-h-[1.5em]">
+            {greetingDone && <RoleLoop roles={roles} />}
           </p>
 
-          <div className="mb-6 animate-fade-in-up animation-delay-400">
-            <p className="text-base text-gray-600 leading-7 tracking-normal max-w-xl">
-              {t.bio}
-            </p>
-          </div>
+          <div className="mb-6 animate-fade-in-up animation-delay-400" />
 
-          {/* Social Icons */}
-          <div className="flex gap-6 animate-fade-in-up animation-delay-600">
-            <Link
-              href="https://www.instagram.com/key.wvy/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1"
-              aria-label="Instagram"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <circle cx="17.5" cy="6.5" r="1.5"></circle>
-              </svg>
-            </Link>
-            <Link
-              href="https://www.tiktok.com/@hplss37"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-black text-black hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1"
-              aria-label="TikTok"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
-              </svg>
-            </Link>
+          {/* Social links */}
+          <div className="animate-fade-in" style={{ width: '240px' }}>
+            <LogoLoop
+              logos={logoItems}
+              speed={40}
+              logoHeight={28}
+              gap={40}
+              pauseOnHover
+              scaleOnHover
+              fadeOut
+              fadeOutColor="#ffffff"
+              width={240}
+            />
           </div>
         </div>
 
-        {/* Right Profile Image */}
+        {/* Profile image with fluid canvas */}
         <div className="flex-1 flex justify-center animate-fade-in-right animation-delay-500">
           <div className="relative w-80 h-80 md:w-96 md:h-96">
             <canvas ref={fluidCanvasRef} className="absolute inset-0 w-full h-full rounded-full" />
@@ -278,6 +243,11 @@ export default function Hero() {
       </div>
 
       <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
@@ -291,18 +261,6 @@ export default function Hero() {
         .animation-delay-200 { animation-delay: 0.2s; }
         .animation-delay-400 { animation-delay: 0.4s; }
         .animation-delay-500 { animation-delay: 0.5s; }
-        .animation-delay-600 { animation-delay: 0.6s; }
-
-        @keyframes blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-
-        .typewriter-cursor {
-          animation: blink 0.7s step-end infinite;
-          font-weight: 300;
-          margin-left: 1px;
-        }
       `}</style>
     </section>
   )

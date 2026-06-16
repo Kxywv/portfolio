@@ -33,7 +33,7 @@ export default function Projects() {
 
   return (
     <section id="projects" className="bg-white flex items-center justify-center px-6 py-20">
-      <div className="max-w-4xl w-full">
+      <div className="max-w-2xl w-full">
         <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-12">
           {t.title}
         </h2>
@@ -44,7 +44,7 @@ export default function Projects() {
               key={index}
               className="bg-gray-50 border-2 border-black rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="relative w-full h-44 md:h-56 bg-black overflow-hidden">
+              <div className="relative w-full h-36 md:h-44 bg-black overflow-hidden">
                 <Image
                   src={`https://api.microlink.io/?url=${encodeURIComponent(project.url)}&screenshot=true&meta=false&embed=screenshot.url`}
                   alt={project.title}

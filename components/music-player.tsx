@@ -5,7 +5,6 @@ import { motion } from 'motion/react'
 import Image from 'next/image'
 import ShapeBlur from './ShapeBlur'
 import ElasticSlider from './ElasticSlider'
-import AudioVisualizer from './AudioVisualizer'
 
 interface Track {
   title: string
@@ -164,86 +163,74 @@ export default function MusicPlayer() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Shape Blur Visualizer with Controls + Audio Visualizer */}
-      <div className="relative w-full rounded-3xl overflow-visible mb-8" style={{ aspectRatio: '1' }}>
-        {/* Main Container */}
-        <div className="relative w-full h-full flex items-center justify-center">
-          {/* Audio Visualizer Ring - Absolute centered */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <AudioVisualizer
-              audioContext={audioContextRef.current}
-              gainNode={gainNodeRef.current}
-              isPlaying={isPlaying}
-            />
-          </div>
-
-          {/* Shape Blur Visualizer with Controls */}
-          <ShapeBlur
-            variation={0}
-            pixelRatioProp={typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1}
-            shapeSize={1.2}
-            roundness={0.4}
-            borderSize={0.05}
-            circleSize={0.3}
-            circleEdge={0.5}
-            className="w-5/6 h-5/6"
-          >
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 gap-4">
-              {/* Cover Art */}
-              <div className="relative w-28 h-28 rounded-xl overflow-hidden shadow-md border border-white/5">
-                <Image
-                  src={track.cover}
-                  alt={track.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-center gap-5 z-20">
-                {/* Previous */}
-                <button
-                  onClick={handlePrev}
-                  className="text-white hover:text-white/70 transition-colors"
-                  aria-label="Previous"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
-                  </svg>
-                </button>
-
-                {/* Play/Pause */}
-                <button
-                  onClick={togglePlay}
-                  className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
-                >
-                  {isPlaying ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                </button>
-
-                {/* Next */}
-                <button
-                  onClick={handleNext}
-                  className="text-white hover:text-white/70 transition-colors"
-                  aria-label="Next"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-                  </svg>
-                </button>
-              </div>
+      {/* Shape Blur Visualizer with Controls */}
+      <div className="relative w-full rounded-3xl overflow-hidden mb-8" style={{ aspectRatio: '1' }}>
+        {/* Shape Blur Visualizer with Controls */}
+        <ShapeBlur
+          variation={0}
+          pixelRatioProp={typeof window !== 'undefined' ? (window.devicePixelRatio || 1) : 1}
+          shapeSize={1.2}
+          roundness={0.4}
+          borderSize={0.05}
+          circleSize={0.3}
+          circleEdge={volume > 0 ? 0.5 : 0.2}
+          className="w-full h-full"
+        >
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 gap-4">
+            {/* Cover Art */}
+            <div className="relative w-28 h-28 rounded-xl overflow-hidden shadow-md border border-white/5">
+              <Image
+                src={track.cover}
+                alt={track.title}
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
-          </ShapeBlur>
-        </div>
+
+            {/* Controls */}
+            <div className="flex items-center justify-center gap-5 z-20">
+              {/* Previous */}
+              <button
+                onClick={handlePrev}
+                className="text-black hover:text-black/60 transition-colors"
+                aria-label="Previous"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                </svg>
+              </button>
+
+              {/* Play/Pause */}
+              <button
+                onClick={togglePlay}
+                className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                aria-label={isPlaying ? 'Pause' : 'Play'}
+              >
+                {isPlaying ? (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                )}
+              </button>
+
+              {/* Next */}
+              <button
+                onClick={handleNext}
+                className="text-black hover:text-black/60 transition-colors"
+                aria-label="Next"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </ShapeBlur>
       </div>
 
       {/* Track Info */}
@@ -280,28 +267,37 @@ export default function MusicPlayer() {
         <ElasticSlider
           leftIcon={
             <motion.div
-              animate={{ scale: volume === 0 ? 1.1 : 1 }}
+              animate={{
+                scale: volume === 0 ? [1, 0.8, 1] : 1,
+                opacity: volume === 0 ? 0.4 : 0.7,
+              }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="flex items-center justify-center"
             >
               {volume === 0 ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                   <line x1="23" y1="9" x2="17" y2="15" />
                   <line x1="17" y1="9" x2="23" y2="15" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black">
                   <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                 </svg>
               )}
             </motion.div>
           }
           rightIcon={
             <motion.div
-              animate={{ scale: volume > 50 ? 1.1 : 1 }}
+              animate={{
+                opacity: volume >= 70 ? 1 : 0.5,
+                scale: volume === 100 ? [1, 1.1, 1] : 1,
+              }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="flex items-center justify-center"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black/70">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-black">
                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
                 <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />

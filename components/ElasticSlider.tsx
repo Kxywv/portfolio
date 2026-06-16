@@ -180,9 +180,9 @@ const Slider: React.FC<SliderProps> = ({
             }}
             className="flex flex-grow"
           >
-            <div className="relative h-full flex-grow overflow-hidden rounded-full bg-white/20">
+            <div className="relative h-full flex-grow overflow-hidden rounded-full bg-black/20">
               <div
-                className="absolute h-full bg-white/60 rounded-full"
+                className="absolute h-full bg-black rounded-full"
                 style={{ width: `${getRangePercentage()}%` }}
               />
             </div>

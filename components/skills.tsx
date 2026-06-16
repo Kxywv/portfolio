@@ -250,18 +250,17 @@ export default function Skills() {
         <div className="bg-gray-50 rounded-2xl p-6 md:p-12 border border-gray-200">
           <div className="flex flex-col md:flex-row gap-10 items-stretch">
             {/* Custom Responsive Horizontal Bar Chart (Kiri) */}
-            <div className="w-full md:w-1/2 flex flex-col gap-6 justify-center">
+            <div key={activeTab} className="w-full md:w-1/2 flex flex-col gap-6 justify-center">
               {currentData.map((skill) => (
                 <div key={getName(skill)} className="flex flex-col gap-2">
                   <div className="flex justify-between text-sm font-medium text-gray-700">
                     <div className="flex items-center gap-2">
                       <span>{getName(skill)}</span>
                     </div>
-                    <span className="text-black font-bold">{skill.level}%</span>
                   </div>
                   <div className="w-full bg-gray-200 h-6 rounded-full overflow-hidden">
                     <div
-                      className="bg-black h-full rounded-full transition-transform duration-[1200ms] cubic-bezier(0.1, 0.76, 0.55, 0.94) origin-left"
+                      className="bg-black h-full rounded-full transition-transform duration-[1200ms] ease-out origin-left"
                       style={{
                         width: `${skill.level}%`,
                         transform: isVisible ? 'scaleX(1)' : 'scaleX(0)',
@@ -292,7 +291,7 @@ export default function Skills() {
         </div>
 
         {/* Stats Grid */}
-        <div className="flex flex-wrap justify-center gap-4 mt-12">
+        <div key={`stats-${activeTab}`} className="flex flex-wrap justify-center gap-4 mt-12">
           {currentData.map((skill) => (
             <div
               key={getName(skill)}

@@ -9,6 +9,5 @@ interface PageContentProps {
 
 export default function PageContent({ children, delay = 150 }: PageContentProps) {
   useMarkPageAsReady(delay)
-
-  return children
+  return <>{children}</>
 }
