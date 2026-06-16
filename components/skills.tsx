@@ -45,8 +45,8 @@ const programmingData: SkillItem[] = [
     ]
   },
   {
-    nameEn: 'NodeJS',
-    nameId: 'NodeJS',
+    nameEn: 'JS/NodeJS',
+    nameId: 'JS/NodeJS',
     level: 75,
     descEn: 'Developing backend services and API gateways using Express and Node.js environment.',
     descId: 'Mengembangkan layanan backend dan API gateway menggunakan lingkungan Express dan Node.js.',

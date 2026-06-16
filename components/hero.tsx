@@ -214,7 +214,7 @@ export default function Hero() {
           <div className="mb-6" />
 
           {/* Social links */}
-          <div className="animate-fade-in w-[240px] flex justify-center md:justify-start">
+          <div className="animate-fade-in animation-delay-1000 w-[240px] flex justify-center md:justify-start">
             <LogoLoop
               logos={logoItems}
               speed={40}
@@ -250,7 +250,7 @@ export default function Hero() {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        .animate-fade-in { animation: fadeIn 1.2s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 1.2s ease-out both; }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
@@ -259,11 +259,12 @@ export default function Hero() {
           from { opacity: 0; transform: translateX(30px); }
           to { opacity: 1; transform: translateX(0); }
         }
-        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; }
-        .animate-fade-in-right { animation: fadeInRight 0.8s ease-out forwards; opacity: 0; }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out both; }
+        .animate-fade-in-right { animation: fadeInRight 0.8s ease-out both; }
         .animation-delay-200 { animation-delay: 0.2s; }
         .animation-delay-400 { animation-delay: 0.4s; }
         .animation-delay-500 { animation-delay: 0.5s; }
+        .animation-delay-1000 { animation-delay: 1.0s; }
       `}</style>
     </section>
   )

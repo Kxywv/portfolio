@@ -5,16 +5,12 @@ import Footer from '@/components/footer'
 import PageContent from '@/components/PageContent'
 import SplitText from '@/components/SplitText'
 import Particles from '@/components/Particles'
+import FadeInOnLoad from '@/components/FadeInOnLoad'
 import { useEffect, useState } from 'react'
 import { useLanguage } from '@/lib/LanguageContext'
 
 export default function HobbyPage() {
-  const [mounted, setMounted] = useState(false)
   const { language } = useLanguage()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const content = {
     id: [
@@ -51,28 +47,30 @@ export default function HobbyPage() {
           />
         </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <section className="min-h-screen bg-transparent flex items-center justify-center px-6 py-24">
-            <div className="max-w-2xl w-full flex flex-col items-center">
-              <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-4 overflow-visible px-2">
-                {mounted && <SplitText text="Hobby" />}
-              </h2>
-              <p className="text-sm text-gray-400 text-center uppercase tracking-widest mb-12">
-                Music & Production
-              </p>
+          <FadeInOnLoad delay={0}>
+            <section className="min-h-screen bg-transparent flex items-center justify-center px-6 py-24">
+              <div className="max-w-2xl w-full flex flex-col items-center">
+                <h2 className="text-4xl md:text-5xl font-bold text-black text-center mb-4 overflow-visible px-2">
+                  <SplitText text="Hobby" />
+                </h2>
+                <p className="text-sm text-gray-400 text-center uppercase tracking-widest mb-12">
+                  Music & Production
+                </p>
 
-              <div className="w-full bg-gray-50 rounded-2xl p-6 md:p-10 border border-gray-200 mb-14 text-center sm:text-left transition-all duration-1000 ease-out opacity-100 translate-y-0 shadow-sm">
-                {texts.map((text, idx) => (
-                  <p key={idx} className={`text-gray-700 text-base md:text-lg leading-8 ${idx !== texts.length - 1 ? 'mb-4' : ''}`}>
-                    {text}
-                  </p>
-                ))}
-              </div>
+                <div className="w-full bg-gray-50 rounded-2xl p-6 md:p-10 border border-gray-200 mb-14 text-center sm:text-left transition-all duration-1000 ease-out opacity-100 translate-y-0 shadow-sm">
+                  {texts.map((text, idx) => (
+                    <p key={idx} className={`text-gray-700 text-base md:text-lg leading-8 ${idx !== texts.length - 1 ? 'mb-4' : ''}`}>
+                      {text}
+                    </p>
+                  ))}
+                </div>
 
-              <div className="w-full">
-                <MusicPlayer />
+                <div className="w-full">
+                  <MusicPlayer />
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </FadeInOnLoad>
 
           <Footer />
         </div>
